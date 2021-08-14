@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netflix_clone_app/pages/login_page.dart';
 import 'package:netflix_clone_app/pages/page_wrapper.dart';
 
 void main() {
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: PageWrapper(),
+      home: LoginPage(),
     );
   }
 }

@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:netflix_clone_app/pages/detail_page.dart';
+import 'package:netflix_clone_app/models/fetched_data.dart';
 import 'package:netflix_clone_app/pages/search_page.dart';
+import 'package:netflix_clone_app/services/database.dart';
 
 class HomePage extends StatefulWidget {
+
+  final FetchedData fetchedData;
+
+  HomePage(this.fetchedData);
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  List movies = [];
+
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+    movies = widget.fetchedData.movies;
+    print("moviees");
+    print(movies);
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -33,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: NetworkImage(
-                                      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"),
+                                      movies[0]["poster_url"].toString()),
                                   fit: BoxFit.cover)),
                         ),
                         Container(
@@ -71,8 +89,8 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DetailPage(
-                                          itemName: "Inception",
+                                    builder: (context) => SearchPage(
+                                    
                                         )));
                           },
                           child: Container(
@@ -147,8 +165,11 @@ class _HomePageState extends State<HomePage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
                             child: Row(
-                                children: List.generate(4, (index) {
+                                children: List.generate(movies.length, (index) {
                               return GestureDetector(
+                                onTap: () => {
+                                  print(movies[index]["movie_name"].toString())
+                                },
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
                                   width: 110,
@@ -157,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                              "https://m.media-amazon.com/images/M/MV5BYzVmYzVkMmUtOGRhMi00MTNmLThlMmUtZTljYjlkMjNkMjJkXkEyXkFqcGdeQXVyNDk3NzU2MTQ@._V1_.jpg"),
+                                              movies[index]["poster_url"].toString()),
                                           fit: BoxFit.cover)),
                                 ),
                               );
@@ -222,7 +243,8 @@ class _HomePageState extends State<HomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
-                            child: Row(children: List.generate(4, (index) {
+                            child: Row(
+                                children: List.generate(4, (index) {
                               return GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
@@ -237,7 +259,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               );
                             })
-                              /*Container(
+                                /*Container(
                                 margin: EdgeInsets.only(right: 8),
                                 width: 110,
                                 height: 160,
@@ -270,7 +292,7 @@ class _HomePageState extends State<HomePage> {
                                             "https://i.pinimg.com/564x/2f/cb/02/2fcb02b8f55bd73e496d5368ebbf42a1.jpg"),
                                         fit: BoxFit.cover)),
                               ),*/
-                            ),
+                                ),
                           ),
                         ),
                       ],
@@ -296,7 +318,8 @@ class _HomePageState extends State<HomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
-                            child: Row(children: List.generate(4, (index) {
+                            child: Row(
+                                children: List.generate(4, (index) {
                               return GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
@@ -306,12 +329,12 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                             "https://m.media-amazon.com/images/M/MV5BNjg1MDQ5MjQ2N15BMl5BanBnXkFtZTYwNjI5NjA3._V1_.jpgmedia-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg" ),
+                                              "https://m.media-amazon.com/images/M/MV5BNjg1MDQ5MjQ2N15BMl5BanBnXkFtZTYwNjI5NjA3._V1_.jpgmedia-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg"),
                                           fit: BoxFit.cover)),
                                 ),
                               );
                             })
-                              /*Container(
+                                /*Container(
                                 margin: EdgeInsets.only(right: 8),
                                 width: 110,
                                 height: 160,
@@ -344,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                                             "https://m.media-amazon.com/images/M/MV5BNzVkYWY4NzYtMWFlZi00YzkwLThhZDItZjcxYTU4ZTMzMDZmXkEyXkFqcGdeQXVyODUxOTU0OTg@._V1_.jpg"),
                                         fit: BoxFit.cover)),
                               ),*/
-                            ),
+                                ),
                           ),
                         ),
                       ],
@@ -370,7 +393,8 @@ class _HomePageState extends State<HomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
-                            child: Row(children: List.generate(4, (index) {
+                            child: Row(
+                                children: List.generate(4, (index) {
                               return GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
@@ -380,12 +404,12 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                             "https://m.media-amazon.com/images/M/MV5BODM3NTZkZTUtYzEyYS00NjEyLTg2NjEtNDhlMjYwY2ZkNGUzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg" ),
+                                              "https://m.media-amazon.com/images/M/MV5BODM3NTZkZTUtYzEyYS00NjEyLTg2NjEtNDhlMjYwY2ZkNGUzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"),
                                           fit: BoxFit.cover)),
                                 ),
                               );
                             })
-                             /* Container(
+                                /* Container(
                                 margin: EdgeInsets.only(right: 8),
                                 width: 165,
                                 height: 300,
@@ -418,7 +442,7 @@ class _HomePageState extends State<HomePage> {
                                             "https://m.media-amazon.com/images/M/MV5BZjdjOWIxMDgtYTgwNS00MjE4LTliZWYtZGI1NDhhZmIyYjM1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"),
                                         fit: BoxFit.cover)),
                               ),*/
-                            ),
+                                ),
                           ),
                         ),
                       ],
@@ -444,7 +468,8 @@ class _HomePageState extends State<HomePage> {
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
-                            child: Row(children: List.generate(4, (index) {
+                            child: Row(
+                                children: List.generate(4, (index) {
                               return GestureDetector(
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
@@ -454,12 +479,12 @@ class _HomePageState extends State<HomePage> {
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                             "https://m.media-amazon.com/images/M/MV5BODM3NTZkZTUtYzEyYS00NjEyLTg2NjEtNDhlMjYwY2ZkNGUzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg" ),
+                                              "https://m.media-amazon.com/images/M/MV5BODM3NTZkZTUtYzEyYS00NjEyLTg2NjEtNDhlMjYwY2ZkNGUzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"),
                                           fit: BoxFit.cover)),
                                 ),
                               );
                             })
-                              /*Container(
+                                /*Container(
                                 margin: EdgeInsets.only(right: 8),
                                 width: 110,
                                 height: 160,
@@ -492,7 +517,7 @@ class _HomePageState extends State<HomePage> {
                                             "https://m.media-amazon.com/images/M/MV5BZjdjOWIxMDgtYTgwNS00MjE4LTliZWYtZGI1NDhhZmIyYjM1XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"),
                                         fit: BoxFit.cover)),
                               ),*/
-                            ),
+                                ),
                           ),
                         ),
                       ],
