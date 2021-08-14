@@ -1,32 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:netflix_clone_app/models/fetched_data.dart';
+import 'package:netflix_clone_app/models/loading.dart';
 import 'package:netflix_clone_app/pages/coming_soon_page.dart';
 import 'package:netflix_clone_app/pages/home_page.dart';
 
 class PageWrapper extends StatefulWidget {
+
+  final String user_email;
+
+  PageWrapper(this.user_email);
+
   @override
   _PageWrapperState createState() => _PageWrapperState();
 }
 
 class _PageWrapperState extends State<PageWrapper> {
   int activeTab = 0;
+  bool isLoading = false;
+  FetchedData fetchedData = FetchedData();
+
+  waitDataToFetch() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await fetchedData.fetchAll();
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    waitDataToFetch();
+    print("user email : ${widget.user_email}");
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      resizeToAvoidBottomInset: false,
-      bottomNavigationBar: bottomNavBar(),
-      body: IndexedStack(
-        index: activeTab,
-        children: [
-          HomePage(),
-          ComingSoonPage(),
-          Center(
-            child: Text("DOWNLOADS", style: TextStyle(color: Colors.white),),
-          ),
-        ],
-      ),
-    );
+    return isLoading
+        ? Loading()
+        : Scaffold(
+            backgroundColor: Colors.black,
+            resizeToAvoidBottomInset: false,
+            bottomNavigationBar: bottomNavBar(),
+            body: IndexedStack(
+              index: activeTab,
+              children: [
+                HomePage(fetchedData),
+                ComingSoonPage(),
+                Center(
+                  child: Text(
+                    "DOWNLOADS",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 
   Widget bottomNavBar() {
@@ -95,7 +130,6 @@ class _PageWrapperState extends State<PageWrapper> {
                 ],
               ),
             ),
-
           ],
         ),
       ),

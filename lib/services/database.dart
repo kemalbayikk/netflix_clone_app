@@ -20,13 +20,14 @@ class DatabaseHelper {
         port: 3306,
         user: 'admin',
         db: 'Netflix',
-        password: 'Ketoketo1*');
+        password: 'kebohso1');
     return await MySqlConnection.connect(settings);
   }
 
   registerCheck(
       String email, String password, String name, String surname) async {
-    return _connection.query("SELECT * FROM Users WHERE email='$email'");
+        _connection = await instance.connection;
+    return _connection.query("SELECT * FROM Users WHERE email_adress='$email'");
   }
 
   insertToUsers(
@@ -34,13 +35,13 @@ class DatabaseHelper {
     _connection = await instance.connection;
 
     return _connection.query(
-        """INSERT INTO Users (email,pw,name,surname) VALUES ('$email','$password','$name','$surname')""");
+        """INSERT INTO Users (email_adress,password,name,surname) VALUES ('$email','$password','$name','$surname')""");
   }
 
   loginCheck(String email, String password) async {
     _connection = await instance.connection;
     return _connection.query(
-        """SELECT * FROM Users WHERE email='$email' AND pw='$password'""");
+        """SELECT * FROM Users WHERE email_adress='$email' AND password='$password'""");
   }
 
   getAllMovies() async {
