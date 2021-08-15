@@ -1,37 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netflix_clone_app/models/fetched_data.dart';
+import 'package:netflix_clone_app/models/loading.dart';
+import 'package:netflix_clone_app/pages/detail_page.dart';
 import 'package:netflix_clone_app/pages/search_page.dart';
 import 'package:netflix_clone_app/services/database.dart';
 
 class HomePage extends StatefulWidget {
-
   final FetchedData fetchedData;
+  final String user_uid;
+  final String user_email;
 
-  HomePage(this.fetchedData);
+  HomePage(this.fetchedData, this.user_uid, this.user_email);
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   List movies = [];
-
-  
+  List series = [];
+  List allContent = [];
+  List myListMovies = [];
+  List myListSeries = [];
+  List allList = [];
+  bool isLoading = false;
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
     movies = widget.fetchedData.movies;
+    series = widget.fetchedData.series;
+    allContent = new List.from(movies)..addAll(series);
     print("moviees");
     print(movies);
+     print("seriees");
+    print(series);
+    print("ALL CONTENT ${allContent[5]}");
+    fetchList();
+    allList = new List.from(myListMovies)..addAll(myListSeries);
+    print("ALL LİST $allList");
+
+    print("user id ====> ${widget.user_uid}");
+  }
+
+  fetchList() async {
+
+    setState(() {
+        isLoading = true;
+      });
+    
+    var callback = DatabaseHelper.instance.getMoviesList(widget.user_uid);
+    await callback.then((value) {
+      //print(value);
+      myListMovies = value.toList();
+      print("LİSTED MOVİES -------------");
+      //print(myListMovies[0]["movie_name"]);
+
+    });
+
+    callback = DatabaseHelper.instance.getSeriesList(widget.user_uid);
+    await callback.then((value) {
+      //print(value);
+      myListSeries = value.toList();
+      print("LİSTED SERİES -------------");
+      //print(myListSeries[0]["serie_uid"]);
+
+      allList = new List.from(myListMovies)..addAll(myListSeries);
+    });
+
+    setState(() {
+        isLoading = false;
+      });
   }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return isLoading ? Loading() : Scaffold(
       backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
       body: Padding(
@@ -65,33 +112,9 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Column(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 25,
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              "My List",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SearchPage(
-                                    
-                                        )));
+                            print("Play button");
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -122,25 +145,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        Column(
-                          children: [
-                            Icon(
-                              Icons.info,
-                              color: Colors.white,
-                              size: 25,
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              "Info",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                     SizedBox(height: 40),
@@ -160,15 +164,80 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(
                           height: 10,
                         ),
-                        SingleChildScrollView(
+                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
                             child: Row(
-                                children: List.generate(movies.length, (index) {
+                                children:
+                                    List.generate(allList.length, (index) {
                               return GestureDetector(
                                 onTap: () => {
-                                  print(movies[index]["movie_name"].toString())
+                                  print(allList[index]["movie_name"]
+                                      .toString()),
+                                  print(allList[index]["serie_name"]
+                                      .toString()),
+                                  // ignore: unrelated_type_equality_checks
+                                  if (allList[index]["serie_name"] != null)
+                                    {
+                                      print("index ${allList[index]["serie_name"].toString()}"),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideoDetailPage(
+                                                  videoUrl: allList[index]
+                                                          ["trailer_url"]
+                                                      .toString(),
+                                                  uid: allList[index]
+                                                          ["serie_uid"]
+                                                      .toString(),
+                                                  movieOrSerie: "Serie",
+                                                  about: allList[index]
+                                                          ["about_serie"]
+                                                      .toString(),
+                                                  director: allList[index]
+                                                          ["director"]
+                                                      .toString(),
+                                                  name: allList[index]
+                                                          ["serie_name"]
+                                                      .toString(),
+                                                  user_uid: widget.user_uid,
+                                                  fetchedData: widget.fetchedData,
+                                                  user_email:widget.user_email
+                                                )),
+                                      )
+                                    }
+                                  else
+                                    {
+                                      print("movieee ----------"),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideoDetailPage(
+                                                  videoUrl: allList[index]
+                                                          ["trailer_url"]
+                                                      .toString(),
+                                                  uid: allList[index]
+                                                          ["movie_uid"]
+                                                      .toString(),
+                                                  movieOrSerie: "Movie",
+                                                  about: allList[index]
+                                                          ["about_movie"]
+                                                      .toString(),
+                                                  director: allList[index]
+                                                          ["director"]
+                                                      .toString(),
+                                                  name: allList[index]
+                                                          ["movie_name"]
+                                                      .toString(),
+                                                  user_uid: widget.user_uid,
+                                                  fetchedData: widget.fetchedData,
+                                                  user_email:widget.user_email
+                                                )),
+                                      )
+                                    }
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
@@ -177,47 +246,13 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
-                                          image: NetworkImage(
-                                              movies[index]["poster_url"].toString()),
+                                          image: NetworkImage(allList[index]
+                                                  ["poster_url"]
+                                              .toString()),
                                           fit: BoxFit.cover)),
                                 ),
                               );
-                            })
-
-                                /*Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://m.media-amazon.com/images/M/MV5BYzVmYzVkMmUtOGRhMi00MTNmLThlMmUtZTljYjlkMjNkMjJkXkEyXkFqcGdeQXVyNDk3NzU2MTQ@._V1_.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://m.media-amazon.com/images/M/MV5BNjg1MDQ5MjQ2N15BMl5BanBnXkFtZTYwNjI5NjA3._V1_.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),*/
-                                ),
+                            })),
                           ),
                         ),
                       ],
@@ -244,8 +279,76 @@ class _HomePageState extends State<HomePage> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 12.0),
                             child: Row(
-                                children: List.generate(4, (index) {
+                                children:
+                                    List.generate(allContent.length, (index) {
                               return GestureDetector(
+                                onTap: () => {
+                                  print(allContent[index]["movie_name"]
+                                      .toString()),
+                                  print(allContent[index]["serie_name"]
+                                      .toString()),
+                                  // ignore: unrelated_type_equality_checks
+                                  if (index >= 4)
+                                    {
+                                      print("serie"),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideoDetailPage(
+                                                  videoUrl: allContent[index]
+                                                          ["trailer_url"]
+                                                      .toString(),
+                                                  uid: allContent[index]
+                                                          ["serie_uid"]
+                                                      .toString(),
+                                                  movieOrSerie: "Serie",
+                                                  about: allContent[index]
+                                                          ["about_serie"]
+                                                      .toString(),
+                                                  director: allContent[index]
+                                                          ["director"]
+                                                      .toString(),
+                                                  name: allContent[index]
+                                                          ["serie_name"]
+                                                      .toString(),
+                                                  user_uid: widget.user_uid,
+                                                  fetchedData: widget.fetchedData,
+                                                  user_email:widget.user_email
+                                                )),
+                                      )
+                                    }
+                                  else
+                                    {
+                                      print("movieee ----------"),
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideoDetailPage(
+                                                  videoUrl: allContent[index]
+                                                          ["trailer_url"]
+                                                      .toString(),
+                                                  uid: allContent[index]
+                                                          ["movie_uid"]
+                                                      .toString(),
+                                                  movieOrSerie: "Movie",
+                                                  about: allContent[index]
+                                                          ["about_movie"]
+                                                      .toString(),
+                                                  director: allContent[index]
+                                                          ["director"]
+                                                      .toString(),
+                                                  name: allContent[index]
+                                                          ["movie_name"]
+                                                      .toString(),
+                                                  user_uid: widget.user_uid,
+                                                  fetchedData: widget.fetchedData,
+                                                  user_email:widget.user_email
+                                                )),
+                                      )
+                                    }
+                                },
                                 child: Container(
                                   margin: EdgeInsets.only(right: 8),
                                   width: 110,
@@ -253,46 +356,13 @@ class _HomePageState extends State<HomePage> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
                                       image: DecorationImage(
-                                          image: NetworkImage(
-                                              "https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg"),
+                                          image: NetworkImage(allContent[index]
+                                                  ["poster_url"]
+                                              .toString()),
                                           fit: BoxFit.cover)),
                                 ),
                               );
-                            })
-                                /*Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://m.media-amazon.com/images/M/MV5BNzRhNWIxYTEtYjc2NS00YWFlLWFhOGEtMDZiMWM1M2RkNDkyXkEyXkFqcGdeQXVyNjc0MjkzNjc@._V1_.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://m.media-amazon.com/images/M/MV5BMDNkOTE4NDQtMTNmYi00MWE0LWE4ZTktYTc0NzhhNWIzNzJiXkEyXkFqcGdeQXVyMzQ2MDI5NjU@._V1_.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: 110,
-                                height: 160,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "https://i.pinimg.com/564x/2f/cb/02/2fcb02b8f55bd73e496d5368ebbf42a1.jpg"),
-                                        fit: BoxFit.cover)),
-                              ),*/
-                                ),
+                            })),
                           ),
                         ),
                       ],
@@ -542,7 +612,7 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SearchPage()),
+                                      builder: (context) => SearchPage(user_uid: widget.user_uid, fetchedData: widget.fetchedData, user_email:widget.user_email)),
                                 );
                               },
                             ),

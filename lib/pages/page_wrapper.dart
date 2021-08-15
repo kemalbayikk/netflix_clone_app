@@ -18,6 +18,7 @@ class PageWrapper extends StatefulWidget {
 class _PageWrapperState extends State<PageWrapper> {
   int activeTab = 0;
   bool isLoading = false;
+  String user_uid;
   FetchedData fetchedData = FetchedData();
 
   waitDataToFetch() async {
@@ -26,6 +27,8 @@ class _PageWrapperState extends State<PageWrapper> {
     });
 
     await fetchedData.fetchAll();
+    user_uid = await fetchedData.getUid(widget.user_email);
+    print("user uid ====> $user_uid");
 
     setState(() {
       isLoading = false;
@@ -51,7 +54,7 @@ class _PageWrapperState extends State<PageWrapper> {
             body: IndexedStack(
               index: activeTab,
               children: [
-                HomePage(fetchedData),
+                HomePage(fetchedData, user_uid, widget.user_email),
                 ComingSoonPage(),
                 Center(
                   child: Text(
