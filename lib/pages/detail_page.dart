@@ -25,8 +25,8 @@ class VideoDetailPage extends StatefulWidget {
       this.about,
       this.name,
       this.director,
-      this.user_uid, 
-      this.fetchedData, 
+      this.user_uid,
+      this.fetchedData,
       this.user_email})
       : super(key: key);
   @override
@@ -45,8 +45,18 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
   String cast = "";
   String genres = "";
   bool isInList = false;
+  bool isLiked = false;
+  bool isDisliked = false;
   Icon listIcon = Icon(
     Icons.add,
+    color: Colors.white,
+  );
+  Icon likeIcon = Icon(
+    Icons.thumb_up,
+    color: Colors.white,
+  );
+  Icon dislikeIcon = Icon(
+    Icons.thumb_down,
     color: Colors.white,
   );
 
@@ -60,6 +70,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       getMovieCast();
       getMovieGenres();
       checkMovieIsInList();
+      checkMovieRating();
     } else {
       setState(() {
         isLoading = true;
@@ -67,6 +78,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       getEpisodes();
       getSerieGenres();
       checkSerieIsInList();
+      checkSerieRating();
       setState(() {
         isLoading = false;
       });
@@ -159,6 +171,120 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
       print(" episodes $episodes");
       for (int i = 0; i < episodes.length; i++) {
         getEpisodeActors(episodes[i]["episode_uid"].toString());
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  checkMovieRating() async {
+    setState(() {
+      isLoading = true;
+    });
+    print(" widget uid ===> ${widget.uid.toString()}");
+    print(" widget user uid ===> ${widget.user_uid.toString()}");
+    var callback = DatabaseHelper.instance
+        .checkMoviesRating(widget.user_uid.toString(), widget.uid.toString(), "1");
+    await callback.then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          likeIcon = Icon(
+            Icons.thumb_up,
+            color: Colors.white,
+          );
+          isLiked = false;
+        });
+      } else {
+        setState(() {
+          likeIcon = Icon(
+            Icons.thumb_up,
+            color: Colors.green,
+          );
+          isLiked = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+
+    callback = DatabaseHelper.instance
+        .checkMoviesRating(widget.user_uid.toString(), widget.uid.toString(), "0");
+    await callback.then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          dislikeIcon = Icon(
+            Icons.thumb_down,
+            color: Colors.white,
+          );
+          isDisliked= false;
+        });
+      } else {
+        setState(() {
+          dislikeIcon = Icon(
+            Icons.thumb_down,
+            color: Colors.red,
+          );
+          isDisliked = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  checkSerieRating() async {
+    setState(() {
+      isLoading = true;
+    });
+    print(" widget uid ===> ${widget.uid.toString()}");
+    print(" widget user uid ===> ${widget.user_uid.toString()}");
+    var callback = DatabaseHelper.instance
+        .checkSeriesRating(widget.user_uid.toString(), widget.uid.toString(), "1");
+    await callback.then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          likeIcon = Icon(
+            Icons.thumb_up,
+            color: Colors.white,
+          );
+          isLiked = false;
+        });
+      } else {
+        setState(() {
+          likeIcon = Icon(
+            Icons.thumb_up,
+            color: Colors.green,
+          );
+          isLiked = true;
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+
+    callback = DatabaseHelper.instance
+        .checkSeriesRating(widget.user_uid.toString(), widget.uid.toString(), "0");
+    await callback.then((value) {
+      if (value.isEmpty) {
+        setState(() {
+          dislikeIcon = Icon(
+            Icons.thumb_down,
+            color: Colors.white,
+          );
+          isDisliked= false;
+        });
+      } else {
+        setState(() {
+          dislikeIcon = Icon(
+            Icons.thumb_down,
+            color: Colors.red,
+          );
+          isDisliked = true;
+        });
       }
       setState(() {
         isLoading = false;
@@ -288,13 +414,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     return AppBar(
       backgroundColor: Colors.black,
       elevation: 0,
-            leading: GestureDetector(
+      leading: GestureDetector(
           onTap: () {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        PageWrapper(widget.user_email)));
+                    builder: (context) => PageWrapper(widget.user_email)));
           },
           child: Icon(Icons.arrow_back_ios)),
       actions: [
@@ -562,6 +687,195 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                             ],
                           ),
                         ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (widget.movieOrSerie == "Movie") {
+                              if (!isLiked) {
+                                  DatabaseHelper.instance.addToMoviesRating(
+                                      widget.user_uid, widget.uid, "1");
+                                  setState(() {
+                                    likeIcon = Icon(
+                                      Icons.thumb_up,
+                                      color: Colors.green,
+                                    );
+                                    isLiked = true;
+                                  });
+                                  if (isDisliked) {
+                                    DatabaseHelper.instance
+                                        .deleteFromMoviesRating(
+                                            widget.user_uid, widget.uid, "0");
+                                    setState(() {
+                                      dislikeIcon = Icon(
+                                        Icons.thumb_down,
+                                        color: Colors.white,
+                                      );
+                                      isDisliked = false;
+                                    });
+                                  }
+                                } else {
+                                  DatabaseHelper.instance
+                                      .deleteFromMoviesRating(
+                                          widget.user_uid, widget.uid, "1");
+                                  setState(() {
+                                    likeIcon = Icon(
+                                      Icons.thumb_up,
+                                      color: Colors.white,
+                                    );
+                                    isLiked = false;
+                                  });
+                                }
+                              }
+
+                            if (widget.movieOrSerie == "Serie") {
+                              if (!isLiked) {
+                                DatabaseHelper.instance.addToSeriesRating(
+                                    widget.user_uid, widget.uid, "1");
+                                setState(() {
+                                  likeIcon = Icon(
+                                    Icons.thumb_up,
+                                    color: Colors.green,
+                                  );
+                                  isLiked = true;
+                                });
+                                if (isDisliked) {
+                                  DatabaseHelper.instance
+                                      .deleteFromSeriesRating(
+                                          widget.user_uid, widget.uid, "0");
+                                  setState(() {
+                                    dislikeIcon = Icon(
+                                      Icons.thumb_down,
+                                      color: Colors.white,
+                                    );
+                                    isDisliked = false;
+                                  });
+                                }
+                              } else {
+                                DatabaseHelper.instance.deleteFromSeriesRating(
+                                    widget.user_uid, widget.uid, "1");
+                                setState(() {
+                                  likeIcon = Icon(
+                                    Icons.thumb_up,
+                                    color: Colors.white,
+                                  );
+                                  isLiked = false;
+                                });
+                              }
+                            }
+                          },
+                          child: Column(
+                            children: [
+                              likeIcon,
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Text(
+                                "Like",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+
+
+
+                        SizedBox(
+                          width: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (widget.movieOrSerie == "Movie") {
+                              if (!isDisliked) {
+                                DatabaseHelper.instance.addToMoviesRating(
+                                        widget.user_uid, widget.uid, "0");
+                                setState(() {
+                                  dislikeIcon = Icon(
+                                    Icons.thumb_down,
+                                    color: Colors.red,
+                                  );
+                                  isDisliked = true;
+                                });
+                                if (isLiked) {
+                                  DatabaseHelper.instance
+                                      .deleteFromMoviesRating(
+                                          widget.user_uid, widget.uid, "1");
+                                  setState(() {
+                                    likeIcon = Icon(
+                                      Icons.thumb_up,
+                                      color: Colors.white,
+                                    );
+                                    isLiked = false;
+                                  });
+                                }
+                              } else {
+                                DatabaseHelper.instance.deleteFromMoviesRating(
+                                    widget.user_uid, widget.uid, "0");
+                                setState(() {
+                                  dislikeIcon = Icon(
+                                    Icons.thumb_down,
+                                    color: Colors.white,
+                                  );
+                                  isDisliked = false;
+                                });
+                              }
+                            }
+                            if (widget.movieOrSerie == "Serie") {
+                              if (!isDisliked) {
+                                DatabaseHelper.instance.addToSeriesRating(
+                                    widget.user_uid, widget.uid, "0");
+                                setState(() {
+                                  dislikeIcon = Icon(
+                                    Icons.thumb_down,
+                                    color: Colors.red,
+                                  );
+                                  isDisliked = true;
+                                });
+                                if (isLiked) {
+                                  DatabaseHelper.instance
+                                      .deleteFromSeriesRating(
+                                          widget.user_uid, widget.uid, "1");
+                                  setState(() {
+                                    likeIcon = Icon(
+                                      Icons.thumb_up,
+                                      color: Colors.white,
+                                    );
+                                    isLiked = false;
+                                  });
+                                }
+                              } else {
+                                DatabaseHelper.instance.deleteFromSeriesRating(
+                                    widget.user_uid, widget.uid, "0");
+                                setState(() {
+                                  dislikeIcon = Icon(
+                                    Icons.thumb_down,
+                                    color: Colors.white,
+                                  );
+                                  isDisliked = false;
+                                });
+                              }
+                            }
+                          },
+                          child: Column(
+                            children: [
+                              dislikeIcon,
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Text(
+                                "Dislike",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -683,6 +997,16 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                     ),
                     SizedBox(
                       height: 8,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        "Director : ${widget.director.toString()}",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                     Text(
                       widget.movieOrSerie == "Movie" ? cast : "",

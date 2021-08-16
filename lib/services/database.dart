@@ -73,6 +73,24 @@ class DatabaseHelper {
         """ INSERT INTO Watch_Later_Movies(user_uid,movie_uid) VALUES ('$user_uid','$movie_uid')""");
   }
 
+  addToMoviesRating(String user_uid, String movie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ INSERT INTO Movie_Ratings(user_uid,movie_uid,users_rating) VALUES ('$user_uid','$movie_uid','$rating')""");
+  }
+
+  checkMoviesRating(String user_uid, String movie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ SELECT * FROM Movie_Ratings WHERE user_uid = '$user_uid' AND movie_uid = '$movie_uid' AND users_rating = '$rating'""");
+  }
+
+  deleteFromMoviesRating(String user_uid, String movie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ DELETE FROM Movie_Ratings WHERE user_uid = $user_uid AND movie_uid = $movie_uid AND users_rating = $rating""");
+  }
+
   getMovieActors(String movie_uid) async {
     _connection = await instance.connection;
     return _connection
@@ -134,6 +152,24 @@ class DatabaseHelper {
         """ INSERT INTO Watch_Later_Series(user_uid,serie_uid) VALUES ('$user_uid','$serie_uid')""");
   }
 
+  addToSeriesRating(String user_uid, String serie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ INSERT INTO Serie_Ratings(user_uid,serie_uid,users_rating) VALUES ('$user_uid','$serie_uid','$rating')""");
+  }
+
+  deleteFromSeriesRating(String user_uid, String serie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ DELETE FROM Serie_Ratings WHERE user_uid = $user_uid AND serie_uid = $serie_uid AND users_rating = $rating""");
+  }
+
+    checkSeriesRating(String user_uid, String serie_uid, String rating) async {
+     _connection = await instance.connection;
+    return _connection.query(
+        """ SELECT * FROM Serie_Ratings WHERE user_uid = '$user_uid' AND serie_uid = '$serie_uid' AND users_rating = '$rating'""");
+  }
+
   checkSerieInList(String user_uid,String serie_uid) async {
     _connection = await instance.connection;
     return _connection.query(
@@ -150,6 +186,12 @@ class DatabaseHelper {
     _connection = await instance.connection;
     return _connection.query(
         """SELECT * FROM Series WHERE serie_name LIKE '$prefix%'""");
+  }
+
+  runQuery(String query) async {
+    _connection = await instance.connection;
+    return _connection.query(
+        query);
   }
 
   getUidFromEmail(String email) async {
