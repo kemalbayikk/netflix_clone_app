@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   image: NetworkImage(
-                                      movies[0]["poster_url"].toString()),
+                                      movies[2]["poster_url"].toString()),
                                   fit: BoxFit.cover)),
                         ),
                         Container(
