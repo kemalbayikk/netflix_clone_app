@@ -103,12 +103,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(widget.uid);
     var callback = DatabaseHelper.instance.getEpisodeActors(episode_uid);
     await callback.then((value) {
-      print(value);
       serieActors = value.toList();
-      print(" serie actorss $serieActors");
 
       for (int i = 0; i < serieActors.length; i++) {
         cast += serieActors[i]["name"].toString();
@@ -117,9 +114,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
         cast += ", ";
       }
 
-      print("cast : $cast");
       episodeActors.add(cast);
-      print(episodeActors);
       cast = "";
       setState(() {
         isLoading = false;
@@ -131,7 +126,6 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(widget.uid);
     var callback =
         DatabaseHelper.instance.checkSerieInList(widget.user_uid, widget.uid);
     await callback.then((value) {
@@ -163,12 +157,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print("widget uid : ${widget.uid}");
     var callback = DatabaseHelper.instance.getEpisodes(widget.uid);
     await callback.then((value) {
-      print(value);
       episodes = value.toList();
-      print(" episodes $episodes");
       for (int i = 0; i < episodes.length; i++) {
         getEpisodeActors(episodes[i]["episode_uid"].toString());
       }
@@ -182,8 +173,6 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(" widget uid ===> ${widget.uid.toString()}");
-    print(" widget user uid ===> ${widget.user_uid.toString()}");
     var callback = DatabaseHelper.instance
         .checkMoviesRating(widget.user_uid.toString(), widget.uid.toString(), "1");
     await callback.then((value) {
@@ -239,8 +228,6 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(" widget uid ===> ${widget.uid.toString()}");
-    print(" widget user uid ===> ${widget.user_uid.toString()}");
     var callback = DatabaseHelper.instance
         .checkSeriesRating(widget.user_uid.toString(), widget.uid.toString(), "1");
     await callback.then((value) {
@@ -296,12 +283,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(" widget uid ===> ${widget.uid.toString()}");
-    print(" widget user uid ===> ${widget.user_uid.toString()}");
     var callback = DatabaseHelper.instance
         .checkMovieInList(widget.user_uid.toString(), widget.uid.toString());
     await callback.then((value) {
-      print("in list ? $value}");
       if (value.isEmpty) {
         setState(() {
           listIcon = Icon(
@@ -329,12 +313,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(widget.uid);
     var callback = DatabaseHelper.instance.getMovieActors(widget.uid);
     await callback.then((value) {
-      print(value);
       movieActors = value.toList();
-      print(" movie actorss $movieActors");
 
       for (int i = 0; i < movieActors.length; i++) {
         cast += movieActors[i]["name"].toString();
@@ -342,8 +323,6 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
         cast += movieActors[i]["surname"].toString();
         cast += ", ";
       }
-
-      print("cast : $cast");
 
       setState(() {
         isLoading = false;
@@ -355,19 +334,15 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(widget.uid);
+
     var callback = DatabaseHelper.instance.getMovieGenres(widget.uid);
     await callback.then((value) {
-      print(value);
       movieGenres = value.toList();
-      print(" movie genres $movieGenres");
       genres = "Genres : ";
       for (int i = 0; i < movieGenres.length; i++) {
         genres += movieGenres[i]["genre"].toString();
         genres += " ,";
       }
-
-      print("genre : $genres");
 
       setState(() {
         isLoading = false;
@@ -379,19 +354,14 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
     setState(() {
       isLoading = true;
     });
-    print(widget.uid);
     var callback = DatabaseHelper.instance.getSerieGenres(widget.uid);
     await callback.then((value) {
-      print(value);
       serieGenres = value.toList();
-      print(" serie genres $serieGenres");
       genres = "Genres : ";
       for (int i = 0; i < serieGenres.length; i++) {
         genres += serieGenres[i]["genre"].toString();
         genres += " ,";
       }
-
-      print("genre : $genres");
 
       setState(() {
         isLoading = false;
@@ -1114,146 +1084,7 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
                             ),
                           )
                         : Container(),
-                    /*
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text(
-                      "Season 1",
-                      style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.white.withOpacity(0.5),
-                          fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(movieList.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: (size.width - 30) * 0.85,
-                                    height: 100,
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 150,
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                width: 150,
-                                                height: 90,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    image: DecorationImage(
-                                                        image: AssetImage(
-                                                            movieList[index]
-                                                                ['img']),
-                                                        fit: BoxFit.cover)),
-                                              ),
-                                              Container(
-                                                width: 150,
-                                                height: 90,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.black
-                                                        .withOpacity(0.3)),
-                                              ),
-                                              Positioned(
-                                                top: 30,
-                                                left: 57,
-                                                child: Container(
-                                                  width: 38,
-                                                  height: 38,
-                                                  decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                          width: 2,
-                                                          color: Colors.white),
-                                                      color: Colors.black
-                                                          .withOpacity(0.4)),
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.play_arrow,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width: (size.width) * 0.35,
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  movieList[index]['title'],
-                                                  style: TextStyle(
-                                                      fontSize: 15,
-                                                      height: 1.3,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Colors.white
-                                                          .withOpacity(0.9)),
-                                                ),
-                                                SizedBox(
-                                                  height: 3,
-                                                ),
-                                                Text(
-                                                  movieList[index]['duration'],
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white
-                                                          .withOpacity(0.5)),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: (size.width - 30) * 0.15,
-                                    height: 100,
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.file_download,
-                                        color: Colors.white.withOpacity(0.7),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                movieList[index]['description'],
-                                style: TextStyle(
-                                    height: 1.4,
-                                    color: Colors.white.withOpacity(0.5)),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),*/
+                    
                     SizedBox(
                       height: 20,
                     )

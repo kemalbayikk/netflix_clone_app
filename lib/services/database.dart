@@ -60,56 +60,56 @@ class DatabaseHelper {
         """ SELECT * FROM Watch_Later_Movies w JOIN Movies m WHERE w.movie_uid = m.movie_uid AND w.user_uid = $user_uid""");
   }
 
-
-   getSeriesList(String user_uid) async {
+  getSeriesList(String user_uid) async {
     _connection = await instance.connection;
     return _connection.query(
         """ SELECT * FROM Watch_Later_Series w JOIN Series m WHERE w.serie_uid = m.serie_uid AND w.user_uid = $user_uid""");
   }
 
   addToMoviesList(String user_uid, String movie_uid) async {
-     _connection = await instance.connection;
+    _connection = await instance.connection;
     return _connection.query(
         """ INSERT INTO Watch_Later_Movies(user_uid,movie_uid) VALUES ('$user_uid','$movie_uid')""");
   }
 
   addToMoviesRating(String user_uid, String movie_uid, String rating) async {
-     _connection = await instance.connection;
+    _connection = await instance.connection;
     return _connection.query(
         """ INSERT INTO Movie_Ratings(user_uid,movie_uid,users_rating) VALUES ('$user_uid','$movie_uid','$rating')""");
   }
 
   checkMoviesRating(String user_uid, String movie_uid, String rating) async {
-     _connection = await instance.connection;
+    _connection = await instance.connection;
     return _connection.query(
         """ SELECT * FROM Movie_Ratings WHERE user_uid = '$user_uid' AND movie_uid = '$movie_uid' AND users_rating = '$rating'""");
   }
 
-  deleteFromMoviesRating(String user_uid, String movie_uid, String rating) async {
-     _connection = await instance.connection;
+  deleteFromMoviesRating(
+      String user_uid, String movie_uid, String rating) async {
+    _connection = await instance.connection;
     return _connection.query(
         """ DELETE FROM Movie_Ratings WHERE user_uid = $user_uid AND movie_uid = $movie_uid AND users_rating = $rating""");
   }
 
   getMovieActors(String movie_uid) async {
     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT a.name, a.surname FROM Movie_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE movie_uid = $movie_uid""");
+    return _connection.query(
+        """ SELECT a.name, a.surname FROM Movie_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE movie_uid = $movie_uid""");
   }
 
   getMovieGenres(String movie_uid) async {
-     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT g.genre FROM Movies m JOIN Movie_Genres g ON m.movie_uid = g.movie_uid WHERE m.movie_uid = $movie_uid""");
+    _connection = await instance.connection;
+    return _connection.query(
+        """ SELECT g.genre FROM Movies m JOIN Movie_Genres g ON m.movie_uid = g.movie_uid WHERE m.movie_uid = $movie_uid""");
   }
 
-  checkMovieInList(String user_uid,String movie_uid) async {
+  checkMovieInList(String user_uid, String movie_uid) async {
     _connection = await instance.connection;
     return _connection.query(
         """ SELECT * FROM Watch_Later_Movies WHERE user_uid = $user_uid AND movie_uid = $movie_uid""");
   }
 
-  deleteMoviesFromList(String user_uid,String movie_uid) async {
+  deleteMoviesFromList(String user_uid, String movie_uid) async {
     _connection = await instance.connection;
     return _connection.query(
         """ DELETE FROM Watch_Later_Movies WHERE user_uid = $user_uid AND movie_uid = $movie_uid""");
@@ -117,66 +117,67 @@ class DatabaseHelper {
 
   searchMovie(String prefix) async {
     _connection = await instance.connection;
-    return _connection.query(
-        """SELECT * FROM Movies WHERE movie_name LIKE '$prefix%'""");
+    return _connection
+        .query("""SELECT * FROM Movies WHERE movie_name LIKE '$prefix%'""");
   }
 
   getEpisodes(String serie_uid) async {
-     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT e.episode_name,e.episode_uid FROM Series s JOIN Serie_Seasons a ON s.serie_uid = a.serie_uid 
+    _connection = await instance.connection;
+    return _connection.query(
+        """ SELECT e.episode_name,e.episode_uid FROM Series s JOIN Serie_Seasons a ON s.serie_uid = a.serie_uid 
                     JOIN Episodes e ON a.season_uid = e.season_uid WHERE a.season_number = 1 AND a.serie_uid = $serie_uid""");
   }
 
   getSerieActors(String serie_uid) async {
     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT a.name, a.surname FROM Serie_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE serie_uid = $serie_uid""");
+    return _connection.query(
+        """ SELECT a.name, a.surname FROM Serie_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE serie_uid = $serie_uid""");
   }
 
   getEpisodeActors(String episode_uid) async {
     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT a.name, a.surname FROM Serie_Episode_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE m.episode_uid = $episode_uid""");
+    return _connection.query(
+        """ SELECT a.name, a.surname FROM Serie_Episode_Actors m JOIN Actors a ON m.actor_uid = a.actor_uid WHERE m.episode_uid = $episode_uid""");
   }
 
   getSerieGenres(String serie_uid) async {
-     _connection = await instance.connection;
-    return _connection
-        .query(""" SELECT g.genre FROM Series m JOIN Serie_Genres g ON m.serie_uid = g.serie_uid WHERE m.serie_uid = $serie_uid""");
+    _connection = await instance.connection;
+    return _connection.query(
+        """ SELECT g.genre FROM Series m JOIN Serie_Genres g ON m.serie_uid = g.serie_uid WHERE m.serie_uid = $serie_uid""");
   }
 
   addToSeriesList(String user_uid, String serie_uid) async {
-     _connection = await instance.connection;
+    _connection = await instance.connection;
     return _connection.query(
         """ INSERT INTO Watch_Later_Series(user_uid,serie_uid) VALUES ('$user_uid','$serie_uid')""");
   }
 
   addToSeriesRating(String user_uid, String serie_uid, String rating) async {
-     _connection = await instance.connection;
+    _connection = await instance.connection;
     return _connection.query(
         """ INSERT INTO Serie_Ratings(user_uid,serie_uid,users_rating) VALUES ('$user_uid','$serie_uid','$rating')""");
   }
 
-  deleteFromSeriesRating(String user_uid, String serie_uid, String rating) async {
-     _connection = await instance.connection;
+  deleteFromSeriesRating(
+      String user_uid, String serie_uid, String rating) async {
+    _connection = await instance.connection;
     return _connection.query(
         """ DELETE FROM Serie_Ratings WHERE user_uid = $user_uid AND serie_uid = $serie_uid AND users_rating = $rating""");
   }
 
-    checkSeriesRating(String user_uid, String serie_uid, String rating) async {
-     _connection = await instance.connection;
+  checkSeriesRating(String user_uid, String serie_uid, String rating) async {
+    _connection = await instance.connection;
     return _connection.query(
         """ SELECT * FROM Serie_Ratings WHERE user_uid = '$user_uid' AND serie_uid = '$serie_uid' AND users_rating = '$rating'""");
   }
 
-  checkSerieInList(String user_uid,String serie_uid) async {
+  checkSerieInList(String user_uid, String serie_uid) async {
     _connection = await instance.connection;
     return _connection.query(
         """ SELECT * FROM Watch_Later_Series WHERE user_uid = $user_uid AND serie_uid = $serie_uid""");
   }
 
-  deleteSeriesFromList(String user_uid,String serie_uid) async {
+  deleteSeriesFromList(String user_uid, String serie_uid) async {
     _connection = await instance.connection;
     return _connection.query(
         """ DELETE FROM Watch_Later_Series WHERE user_uid = $user_uid AND serie_uid = $serie_uid""");
@@ -184,24 +185,18 @@ class DatabaseHelper {
 
   searchSerie(String prefix) async {
     _connection = await instance.connection;
-    return _connection.query(
-        """SELECT * FROM Series WHERE serie_name LIKE '$prefix%'""");
+    return _connection
+        .query("""SELECT * FROM Series WHERE serie_name LIKE '$prefix%'""");
   }
 
   runQuery(String query) async {
     _connection = await instance.connection;
-    return _connection.query(
-        query);
+    return _connection.query(query);
   }
 
   getUidFromEmail(String email) async {
     _connection = await instance.connection;
     return _connection
         .query(""" SELECT user_uid FROM Users WHERE email_adress = '$email'""");
-  }
-
-  printUsers() async {
-    _connection = await instance.connection;
-    _connection.query("select * from Users").then((value) => {print(value)});
   }
 }
