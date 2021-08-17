@@ -4,12 +4,12 @@ import 'package:netflix_clone_app/pages/search_page.dart';
 import 'package:netflix_clone_app/services/database.dart';
 import 'package:video_player/video_player.dart';
 
-class ComingSoonPage extends StatefulWidget {
+class QueryPage extends StatefulWidget {
   @override
-  _ComingSoonPageState createState() => _ComingSoonPageState();
+  _QueryPageState createState() => _QueryPageState();
 }
 
-class _ComingSoonPageState extends State<ComingSoonPage> {
+class _QueryPageState extends State<QueryPage> {
   String queryResult;
   List resultList = [];
   bool isLoading = false;
@@ -30,7 +30,6 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
     try {
       callback = DatabaseHelper.instance.runQuery(query);
       await callback.then((value) {
-        //print(value);
         resultList = value.toList();
         if (resultList.isNotEmpty) {
           setState(() {

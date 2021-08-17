@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netflix_clone_app/models/fetched_data.dart';
 import 'package:netflix_clone_app/models/loading.dart';
-import 'package:netflix_clone_app/pages/coming_soon_page.dart';
+import 'package:netflix_clone_app/pages/query_page.dart';
 import 'package:netflix_clone_app/pages/home_page.dart';
 
 class PageWrapper extends StatefulWidget {
-
   final String user_email;
 
   PageWrapper(this.user_email);
@@ -28,7 +27,6 @@ class _PageWrapperState extends State<PageWrapper> {
 
     await fetchedData.fetchAll();
     user_uid = await fetchedData.getUid(widget.user_email);
-    print("user uid ====> $user_uid");
 
     setState(() {
       isLoading = false;
@@ -40,7 +38,6 @@ class _PageWrapperState extends State<PageWrapper> {
     // TODO: implement initState
     super.initState();
     waitDataToFetch();
-    print("user email : ${widget.user_email}");
   }
 
   @override
@@ -55,13 +52,7 @@ class _PageWrapperState extends State<PageWrapper> {
               index: activeTab,
               children: [
                 HomePage(fetchedData, user_uid, widget.user_email),
-                ComingSoonPage(),
-                Center(
-                  child: Text(
-                    "DOWNLOADS",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
+                QueryPage(),
               ],
             ),
           );
@@ -74,7 +65,7 @@ class _PageWrapperState extends State<PageWrapper> {
       child: Padding(
         padding: const EdgeInsets.only(top: 5.0, left: 20, right: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             GestureDetector(
               onTap: () {
@@ -108,26 +99,7 @@ class _PageWrapperState extends State<PageWrapper> {
                     height: 5,
                   ),
                   Text(
-                    "Coming Soon",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  activeTab = 2;
-                });
-              },
-              child: Column(
-                children: [
-                  Icon(AntDesign.download, color: Colors.white),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    "Downloads",
+                    "Query Page",
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],

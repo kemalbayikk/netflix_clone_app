@@ -191,11 +191,11 @@ class _SignUpPageState extends State<SignUpPage> {
     var callback = DatabaseHelper.instance.insertToUsers(emailController.text,
         passwordController.text, nameController.text, surnameController.text);
     await callback.then((value) {
-      print(value);
       Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PageWrapper(emailController.text)),
-            );
+        context,
+        MaterialPageRoute(
+            builder: (context) => PageWrapper(emailController.text)),
+      );
     });
   }
 
